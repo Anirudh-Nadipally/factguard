@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "factguard"
+version = "0.1.0"
+description = "Catch LLMs inventing or misattributing numbers when they write from data. Deterministic, no LLM judge."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{ name = "Anirudh Nadipally" }]
+keywords = ["llm", "evals", "hallucination", "fact-checking", "data-to-text", "guardrails"]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+factguard = "factguard.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Anirudh-Nadipally/factguard"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/factguard"]
