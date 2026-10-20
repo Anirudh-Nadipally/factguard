@@ -122,3 +122,14 @@ def test_wrong_row_is_flagged_and_named():
     assert [v.claim for v in bad] == ["42,000", "3.5"]
     assert "stores[1].revenue=38500" in bad[0].hint and "stores[0].revenue" in bad[0].hint
     assert bad[1].hint.startswith("stores[2].rating")
+
+
+def test_strict_rows_and_compound_number_words():
+    data = {"products": [{"name": "Breeze Fan", "price": 89.0, "stock": 75},
+                         {"name": "Lamp", "price": 49.99, "stock": 12}]}
+    text = "Breeze Fan costs $49.99. The Lamp has seventy-five in stock."
+    assert status(check(text, data), "$49.99") == "supported"          # default: loose
+    r = Checker(data, strict_rows=True).check(text)
+    assert status(r, "$49.99") == "contradicted"
+    assert status(r, "seventy-five") == "contradicted"
+    assert next(v.value for v in r.verdicts if v.claim == "seventy-five") == 75

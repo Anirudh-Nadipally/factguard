@@ -208,7 +208,11 @@ class Checker:
                  ignore_years: bool = True, words: bool = True,
                  ignore_small_ints: bool = False, derive_from: int = 12,
                  aliases: dict[str, list[str]] | None = None, scoped: bool = True,
-                 pairs: dict[str, tuple[str, str]] | None = None):
+                 pairs: dict[str, tuple[str, str]] | None = None, strict_rows: bool = False):
+        # strict_rows: once a sentence names a row, a value found only on another row is a
+        # contradiction. Right for product or store tables; noisy in dense multi-entity prose
+        # (it cost 7 points of precision on the INLG train set), so it is opt-in.
+        self.strict_rows = strict_rows
         self.facts = flatten(data)
         self.scoper = Scoper(data, aliases) if scoped else None
         self.aliases = aliases or {}
@@ -400,6 +404,15 @@ class Checker:
             for k, (path, val) in rec.fields.items():
                 if any(abs(val - t) <= tol for t, tol in forms):
                     v.status, v.evidence = "supported", path
+                    return v
+            # a row is named but the value sits only on another row: "Breeze Fan costs $49.99"
+            # when $49.99 is the Lamp's price. Never borrow a value across rows.
+            if self.strict_rows and not v.low_signal:
+                mine = {p for p, _ in rec.fields.values()}
+                hits = [f for f in self.facts if f.path not in mine and not f.path.startswith("len(")
+                        and any(abs(f.value - t) <= tol for t, tol in forms)]
+                if len(hits) == 1:
+                    v.status, v.hint = "contradicted", f"{rec.path} has no such value; the stated value is {hits[0].path}"
                     return v
             return None
         path, val = rec.fields[key]

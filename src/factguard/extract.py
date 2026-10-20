@@ -41,7 +41,10 @@ _NUM_RE = re.compile(
     re.VERBOSE,
 )
 
-_WORD_RE = re.compile(r"\b(" + "|".join(_WORDS) + r")\b", re.IGNORECASE)
+_TENS = "twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety"
+_UNITS = "one|two|three|four|five|six|seven|eight|nine"
+# "seventy-five" / "seventy five" is one number, tried before the single words
+_WORD_RE = re.compile(r"\b((?:" + _TENS + r")[\s-](?:" + _UNITS + r")|" + "|".join(_WORDS) + r")\b", re.IGNORECASE)
 
 _YEAR_RE = re.compile(r"^(19|20)\d\d$")
 _SENT_RE = re.compile(r"(?<=[.!?])\s+|\n+")
@@ -136,13 +139,14 @@ def extract_claims(text: str, *, ignore_years: bool = True, words: bool = True) 
         for m in _WORD_RE.finditer(text):
             if any(a <= m.start() < b for a, b in taken):
                 continue
-            w = m.group(1).lower()
+            w = re.sub(r"[\s-]+", " ", m.group(1).lower())
+            val = sum(_WORDS[p] for p in w.split())
             if w == "one":  # "one of", "no one" are almost never claims
                 continue
             if _WORD_PHRASE.match(text[m.end():m.end() + 12]) or re.search(r"-\s*$", text[max(0, m.start() - 3):m.start()]):  # three-pointer, double-digit, double-double
                 continue
             unit = "x" if w in ("twice", "doubled", "tripled", "halved") else ""
-            claims.append(Claim(m.group(1), float(_WORDS[w]), unit, 0, 1.0,
+            claims.append(Claim(m.group(1), float(val), unit, 0, 1.0,
                                 m.start(), m.end(), _sentence_at(text, m.start()), True))
     claims.sort(key=lambda c: c.start)
     return claims
