@@ -17,15 +17,15 @@
     },
     "examples": [
       "S001 HIT  '30' in: The Celtics ( 32 - 18 ) came into this game as a double - digit favorite , but the Celtics ( 32 - 18 ) came in -> teams[0].PTS=113",
-      "S001 HIT  'six' in: The team was led by Isaiah Thomas 's 38 points , which he supplemented with six assists , two rebounds and a s -> players[22].AST=4",
+      "S001 HIT  'six' in: The team was led by Isaiah Thomas 's 38 points , which he supplemented with six assists , two rebounds and a s -> players[22].AST=4; the stated value is players[11].AST",
       "S001 HIT  'a' in: Jae Crowder was next with a 18 - point , 12 - rebound double - double that also included an assist , two steal -> players[18].BLK=0",
-      "S001 HIT  '10' in: Kelly Olynyk led the second unit with 10 points , nine rebounds , two assists and a pair of steals . -> players[4].PTS=7",
-      "S002 HIT  '21' in: The assist - to - turnover ratio was the decisive statistic , with the Hawks recording 21 assists to 19 turnov -> teams[1].AST=22",
-      "S002 HIT  '19' in: The assist - to - turnover ratio was the decisive statistic , with the Hawks recording 21 assists to 19 turnov -> teams[0].TOV=6",
+      "S001 HIT  '10' in: Kelly Olynyk led the second unit with 10 points , nine rebounds , two assists and a pair of steals . -> players[4].PTS=7; the stated value is players[3].PTS",
+      "S002 HIT  '21' in: The assist - to - turnover ratio was the decisive statistic , with the Hawks recording 21 assists to 19 turnov -> teams[1].AST=22; the stated value is teams[0].AST",
+      "S002 HIT  '19' in: The assist - to - turnover ratio was the decisive statistic , with the Hawks recording 21 assists to 19 turnov -> teams[0].TOV=6; the stated value is teams[1].TOV",
       "S002 HIT  '17' in: Dwight Howard was the player of the game , as he tallied 17 points , 17 rebounds and three blocks on 3 - of -  -> players[9].PTS=7",
       "S002 HIT  'four' in: Kyrie Irving was second on the team , as he accrued 29 points , four rebounds and four assists . -> players[22].REB=1",
       "S002 HIT  '11' in: Kevin Love finished second on the team , collecting 24 points , 11 rebounds and three steals . -> players[21].REB=12",
-      "S002 HIT  '25' in: Tristan Thompson was a nice spark off the bench , providing 25 points , two rebounds and four assists . -> players[20].PTS=0",
+      "S002 HIT  '25' in: Tristan Thompson was a nice spark off the bench , providing 25 points , two rebounds and four assists . -> players[20].PTS=0; the stated value is players[8].PTS",
       "S002 HIT  'four' in: Tristan Thompson was a nice spark off the bench , providing 25 points , two rebounds and four assists . -> players[20].AST=0",
       "S003 MISS '30' in: The Raptors ( 19 - 8 ) have been one of the hottest teams in the NBA this season , and the Raptors ( 19 - 8 )  -> teams[1].PTS=109"
     ]
@@ -35,16 +35,16 @@
     "numeric_claims": 1407,
     "gold_number_errors": 224,
     "all": {
-      "flags": 148,
+      "flags": 149,
       "recall": 0.406,
-      "precision_number": 0.615,
-      "precision_any_error": 0.628
+      "precision_number": 0.611,
+      "precision_any_error": 0.624
     },
     "contradicted": {
-      "flags": 142,
+      "flags": 143,
       "recall": 0.379,
-      "precision_number": 0.599,
-      "precision_any_error": 0.613
+      "precision_number": 0.594,
+      "precision_any_error": 0.608
     },
     "examples": [
       "T001 MISS '6' in: Cousins went 9 - for - 12 from the field and 6 - for - 9 from the three - point line to score a game - high of -> players[8].FG3M=0",
@@ -53,10 +53,10 @@
       "T001 HIT  '12' in: It was his second double - double in a row , a stretch where he 's averaging 21 points and 12 rebounds . -> players[7].REB=2",
       "T001 HIT  '2' in: The only other Net to reach double figures in points was Ben McLemore , who finished with 11 points ( 4 - 9 FG -> players[7].FTA=0",
       "T002 HIT  '17' in: DeMarcus Cousins was the only other starter in double figures , as he accumulated 29 points , 17 rebounds and  -> players[20].REB=16",
-      "T003 MISS '18' in: The Raptors got off to a quick start in this one , out - scoring the Raptors 31 - 18 right away in the first q -> teams[1].PTS_QTR1=31",
-      "T003 MISS '18' in: The Magic came out firing in this one , out - scoring the Raptors 31 - 18 right away in the first quarter . -> teams[1].PTS_QTR1=31",
+      "T003 MISS '18' in: The Raptors got off to a quick start in this one , out - scoring the Raptors 31 - 18 right away in the first q -> teams[1].PTS_QTR1=31; the stated value is teams[0].PTS_QTR1",
+      "T003 MISS '18' in: The Magic came out firing in this one , out - scoring the Raptors 31 - 18 right away in the first quarter . -> teams[1].PTS_QTR1=31; the stated value is teams[0].PTS_QTR1",
       "T003 HIT  '18' in: The Raptors were also able to force the Magic into 18 turnovers , while committing only 10 of their own . -> teams[0].TOV=15",
-      "T003 MISS '5' in: The Raptors were led by DeMar DeRozan , who went 4 - for - 19 from the field and 5 - for - 6 from the three -  -> players[7].FG3M=0",
+      "T003 MISS '5' in: The Raptors were led by DeMar DeRozan , who went 4 - for - 19 from the field and 5 - for - 6 from the three -  -> players[7].FG3M=0; the stated value is players[21].FG3M",
       "T003 MISS '6' in: The Raptors were led by DeMar DeRozan , who went 4 - for - 19 from the field and 5 - for - 6 from the three -  -> players[7].FG3A=2",
       "T003 HIT  '40' in: The Raptors were led by DeMar DeRozan , who went 4 - for - 19 from the field and 5 - for - 6 from the three -  -> players[7].PTS=13"
     ]

@@ -109,3 +109,16 @@ def test_cli_fail_under(tmp_path: Path):
     cmd = [sys.executable, "-m", "factguard.cli", "check", "--data", str(data), "--text", str(txt)]
     assert subprocess.run(cmd, capture_output=True).returncode == 0
     assert subprocess.run(cmd + ["--fail-under", "1.0"], capture_output=True).returncode == 1
+
+
+def test_wrong_row_is_flagged_and_named():
+    from factguard import check
+    data = {"stores": [{"name": "Mumbai", "revenue": 42000, "rating": 4.6},
+                       {"name": "Delhi", "revenue": 38500, "rating": 4.1},
+                       {"name": "Pune", "revenue": 12000, "rating": 3.8}]}
+    r = check("Mumbai's revenue was 42,000. Delhi's revenue was 42,000. "
+              "Pune's rating slipped to 3.5.", data)
+    bad = [v for v in r.verdicts if v.status == "contradicted"]
+    assert [v.claim for v in bad] == ["42,000", "3.5"]
+    assert "stores[1].revenue=38500" in bad[0].hint and "stores[0].revenue" in bad[0].hint
+    assert bad[1].hint.startswith("stores[2].rating")

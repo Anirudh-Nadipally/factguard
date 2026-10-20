@@ -346,7 +346,7 @@ class Checker:
     def _field_words(text: str, c: Claim) -> tuple[list[str], list[str]]:
         after: list[str] = []
         for tok in re.findall(r"[A-Za-z][A-Za-z'’]*|\d+|[^\sA-Za-z\d]", text[c.end:c.end + 60]):
-            if tok[0].isdigit() or tok in ",.;:()!?":
+            if tok[0].isdigit() or tok in ",.;:()!?" or tok.lower() in ("and", "but", "while", "whereas"):
                 break
             if tok[0].isalpha() and tok.lower() not in _FILLER:
                 after.append(tok)
@@ -355,6 +355,11 @@ class Checker:
         # only the word right before the number ("points: 38", "rating 4.7"), never further back
         m = re.search(r"([A-Za-z][A-Za-z'’]*)\s*[:=]?\s*$", text[max(0, c.start - 25):c.start])
         before = [m.group(1)] if m else []
+        # "revenue was 42,000", "rating slipped to 3.5": a field word a few back in the same clause
+        clause = re.split(r"[,.;:()!?]|\d", text[max(0, c.start - 45):c.start])[-1]
+        for w in reversed(re.findall(r"[A-Za-z][A-Za-z'’]*", clause)[-4:]):
+            if w not in before and w.lower() not in _FILLER:
+                before.append(w)
         return after, before
 
     def _pair_field(self, c: Claim, text: str) -> tuple[str, str] | None:
@@ -410,6 +415,12 @@ class Checker:
                         v.status, v.evidence = "derived", formula
                         return v
         v.status, v.hint = "contradicted", f"{path}={val:g}"
+        # wrong row: the same field on another record holds the stated value
+        # (only when exactly one other record matches, so "four rebounds" among 26 players stays quiet)
+        others = [f for f in self.facts if _leaf(f.path) == key and f.path != path
+                  and any(abs(f.value - t) <= tol for t, tol in forms)]
+        if len(others) == 1:
+            v.hint += f"; the stated value is {others[0].path}"
         return v
 
     def _article_claims(self, text: str, taken: list[Claim]) -> list[Claim]:

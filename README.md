@@ -47,7 +47,7 @@ Incorrect **numbers**, test set (30 texts, 224 gold number errors), mistake-leve
 | Laval University | human + tools (hybrid) | 0.862 | 0.881 |
 | Charles-UPF | trained language model | 0.777 | 0.750 |
 | NIJL | rules + trained classifier | 0.696 | 0.419 |
-| **factguard 0.1** | **rules, no model, no training** | **0.406** | **0.615** |
+| **factguard 0.1** | **rules, no model, no training** | **0.406** | **0.611** |
 | Laval University | rules + classifiers (metric only) | 0.442 | 0.351 |
 | Eurecom | claim verification | 0.205 | 0.329 |
 
