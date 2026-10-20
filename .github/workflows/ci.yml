@@ -24,4 +24,10 @@ jobs:
       - run: git clone --depth 1 https://github.com/ehudreiter/accuracySharedTask /tmp/ast
       - run: python benchmarks/inlg2021/run.py /tmp/ast | tee bench.json
       - name: results match the committed numbers
-        run: python -c "import json;a=json.load(open('bench.json'));b=json.load(open('benchmarks/inlg2021/results.json'));assert a==b, 'benchmark drifted: update results.json'"
+        run: |
+          python - <<'PY'
+          import json
+          a = json.load(open("bench.json"))
+          b = json.load(open("benchmarks/inlg2021/results.json"))
+          assert a == b, "benchmark drifted, update results.json"
+          PY
