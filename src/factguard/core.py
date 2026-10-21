@@ -419,6 +419,13 @@ class Checker:
         if any(abs(val - t) <= tol for t, tol in forms):
             v.status, v.evidence = "supported", path
             return v
+        # field taken from words before the number only ("sold 30 units at $12.50"): if the value is
+        # exactly another field of the same record, that field is the one meant
+        if not after and not pair:
+            for k2, (p2, val2) in rec.fields.items():
+                if k2 != key and any(abs(val2 - t) <= tol for t, tol in forms):
+                    v.status, v.evidence = "supported", p2
+                    return v
         # "27 more points than Horford": a difference or ratio of that field
         if self.derived:
             same = [f for f in self.facts if _leaf(f.path) == key or _parent(f.path) == _parent(path)]

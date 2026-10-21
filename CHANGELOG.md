@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Fix: a field word earlier in the clause no longer overrides an exact match on another field of the same record ("sold 30 units at $12.50" flagged the price). Benchmark unchanged.
+
+## Unreleased
 - GitHub Action (`action.yml`): `uses: Anirudh-Nadipally/factguard@v0.2` with `text-file`, `source-file`, `fail-under`, `strict-rows`; outputs `score` and `flagged`, writes a job summary. Dogfooded in CI on `examples/`.
 - promptfoo python assertion (`integrations/promptfoo`) and DeepEval `BaseMetric` (`integrations/deepeval`, deepeval imported lazily). Core stays zero-dependency.
 

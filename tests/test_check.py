@@ -133,3 +133,10 @@ def test_strict_rows_and_compound_number_words():
     assert status(r, "$49.99") == "contradicted"
     assert status(r, "seventy-five") == "contradicted"
     assert next(v.value for v in r.verdicts if v.claim == "seventy-five") == 75
+
+
+def test_earlier_field_word_does_not_steal_a_same_row_value():
+    data = {"products": [{"name": "Holo Sticker", "price": 12.5, "units_sold": 30}]}
+    r = check("Holo Sticker sold 30 units at $12.50.", data)
+    assert status(r, "$12.50") == "supported"
+    assert status(r, "30") == "supported"
