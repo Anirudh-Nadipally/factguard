@@ -24,3 +24,6 @@ Homepage = "https://github.com/Anirudh-Nadipally/factguard"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/factguard"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

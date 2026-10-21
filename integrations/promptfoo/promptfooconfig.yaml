@@ -1,0 +1,31 @@
+# Example: run from this directory with `npx promptfoo@latest eval`.
+# Uses promptfoo's built-in `echo` provider so it runs offline; swap in a real model.
+description: factguard numeric grounding check
+
+prompts:
+  - "{{summary}}"
+
+providers:
+  - echo
+
+tests:
+  - description: every number is in the data
+    vars:
+      source: file://../../examples/store.json
+      summary: Acme Prints closed the month with 42 orders and a 4.7 rating. Conversion sits at 3.8%.
+    assert:
+      - type: python
+        value: file://factguard_assert.py
+        config:
+          fail_under: 1.0
+
+  # not-python inverts pass/fail: this test passes because factguard fails the text.
+  - description: invented and misattributed numbers are caught
+    vars:
+      source: file://../../examples/store.json
+      summary: file://../../examples/report.txt
+    assert:
+      - type: not-python
+        value: file://factguard_assert.py
+        config:
+          fail_under: 1.0
