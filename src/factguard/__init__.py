@@ -9,4 +9,4 @@ from .extract import Claim, extract_claims
 
 __all__ = ["check", "assert_grounded", "Checker", "Report", "Verdict", "flatten",
            "extract_claims", "Claim"]
-__version__ = "0.2.0"
+__version__ = "0.2.1"
