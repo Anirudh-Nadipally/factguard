@@ -1,0 +1,50 @@
+name: action
+on: [push, pull_request]
+jobs:
+  dogfood:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: report only (no fail-under)
+        id: report
+        uses: ./
+        with:
+          text-file: examples/report.txt
+          source-file: examples/store.json
+
+      - name: passes when the threshold is met
+        id: lenient
+        uses: ./
+        with:
+          text-file: examples/report.txt
+          source-file: examples/store.json
+          fail-under: "0.5"
+          strict-rows: "true"
+
+      - name: fails when the threshold is not met
+        id: strict
+        continue-on-error: true
+        uses: ./
+        with:
+          text-file: examples/report.txt
+          source-file: examples/store.json
+          fail-under: "1.0"
+
+      - name: check outcomes and outputs
+        shell: bash
+        env:
+          SCORE: ${{ steps.report.outputs.score }}
+          FLAGGED: ${{ steps.report.outputs.flagged }}
+          LENIENT: ${{ steps.lenient.outcome }}
+          STRICT: ${{ steps.strict.outcome }}
+        run: |
+          set -eu
+          echo "score=$SCORE flagged=$FLAGGED lenient=$LENIENT strict=$STRICT"
+          python3 -c "import os; s=float(os.environ['SCORE']); assert 0 < s < 1, s"
+          [ "$FLAGGED" -gt 0 ]
+          [ "$LENIENT" = "success" ]
+          [ "$STRICT" = "failure" ]

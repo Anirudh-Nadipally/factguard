@@ -1,0 +1,91 @@
+name: factguard
+description: Check every number in an LLM-written text against the JSON it was written from. Deterministic, no LLM judge.
+author: Anirudh Nadipally
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  text-file:
+    description: Path to the text file to check (the LLM output).
+    required: true
+  source-file:
+    description: Path to the JSON file the text was written from.
+    required: true
+  fail-under:
+    description: Fail the step if the grounded share is below this (0 to 1, e.g. 1.0). Empty = report only, never fail.
+    required: false
+    default: ""
+  strict-rows:
+    description: '"true" to flag a value that belongs to a different row than the one the sentence names.'
+    required: false
+    default: "false"
+
+outputs:
+  score:
+    description: Share of numeric claims the data supports (1.0 when there are none).
+    value: ${{ steps.check.outputs.score }}
+  flagged:
+    description: Number of contradicted plus unsupported claims.
+    value: ${{ steps.check.outputs.flagged }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install factguard
+      shell: bash
+      env:
+        FG_SRC: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        py=python3; command -v "$py" >/dev/null 2>&1 || py=python
+        venv="$RUNNER_TEMP/factguard-venv"
+        "$py" -m venv "$venv"
+        if [ -x "$venv/bin/python" ]; then fgpy="$venv/bin/python"; else fgpy="$venv/Scripts/python.exe"; fi
+        "$fgpy" -m pip install --quiet --disable-pip-version-check "$FG_SRC"
+        echo "FACTGUARD_PY=$fgpy" >> "$GITHUB_ENV"
+
+    - name: Run factguard
+      id: check
+      shell: bash
+      env:
+        FG_TEXT: ${{ inputs.text-file }}
+        FG_SOURCE: ${{ inputs.source-file }}
+        FG_FAIL_UNDER: ${{ inputs.fail-under }}
+        FG_STRICT_ROWS: ${{ inputs.strict-rows }}
+      run: |
+        set -uo pipefail
+        args=(check --data "$FG_SOURCE" --text "$FG_TEXT")
+        case "$(echo "$FG_STRICT_ROWS" | tr '[:upper:]' '[:lower:]')" in
+          true|1|yes) args+=(--strict-rows) ;;
+        esac
+        # Human-readable report in the log
+        "$FACTGUARD_PY" -m factguard.cli "${args[@]}" || exit $?
+        # Machine-readable pass for outputs and the job summary
+        "$FACTGUARD_PY" -m factguard.cli "${args[@]}" --json > "$RUNNER_TEMP/factguard.json" || exit $?
+        "$FACTGUARD_PY" - "$RUNNER_TEMP/factguard.json" <<'PY'
+        import json, os, sys
+        r = json.load(open(sys.argv[1]))
+        flagged = r["contradicted"] + r["unsupported"]
+        with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+            f.write(f"score={r['score']}\nflagged={flagged}\n")
+        lines = [f"### factguard: {r['claims'] - flagged}/{r['claims']} numeric claims grounded (score {r['score']:.2f})", ""]
+        bad = [v for v in r["verdicts"] if v["status"] in ("contradicted", "unsupported")]
+        if bad:
+            lines += ["| claim | status | data says / nearest fact | sentence |", "|---|---|---|---|"]
+            for v in bad:
+                s = v["sentence"].replace("|", "\\|").strip()
+                lines.append(f"| `{v['claim']}` | {v['status']} | {v['hint'] or '-'} | {s} |")
+        summary = os.environ.get("GITHUB_STEP_SUMMARY")
+        if summary:
+            with open(summary, "a") as f:
+                f.write("\n".join(lines) + "\n")
+        PY
+        if [ -n "$FG_FAIL_UNDER" ]; then
+          "$FACTGUARD_PY" -m factguard.cli "${args[@]}" --fail-under "$FG_FAIL_UNDER" > /dev/null
+          rc=$?
+          if [ $rc -ne 0 ]; then
+            echo "::error::factguard score is below fail-under=$FG_FAIL_UNDER"
+            exit $rc
+          fi
+        fi
