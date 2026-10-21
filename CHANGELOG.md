@@ -1,0 +1,10 @@
+# Changelog
+
+## 0.2.0 (2026-10-21)
+- Wrong-row detection: a correct number attached to the wrong entity is flagged, and the report names the row the value actually belongs to (reported by a user on X).
+- Compound number words are read as one number (`seventy-five` -> 75).
+- Opt-in `strict_rows` / `--strict-rows`: once a sentence names a row, a value found only on another row is contradicted even without a metric word. Off by default. On INLG 2021 test: off R 0.406 / P 0.611, on R 0.433 / P 0.497.
+- Benchmark results regenerated; CI checks for drift on every push.
+
+## 0.1.0 (2026-10-20)
+- First release: deterministic numeric-claim checker for LLM text against source JSON, entity and field scoping, tolerance for written precision, hedges, gated derivations, aliases, CLI with `--fail-under`, `assert_grounded`, INLG 2021 benchmark.

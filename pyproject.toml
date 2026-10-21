@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "factguard"
-version = "0.1.0"
+version = "0.2.0"
 description = "Catch LLMs inventing or misattributing numbers when they write from data. Deterministic, no LLM judge."
 readme = "README.md"
 requires-python = ">=3.9"
