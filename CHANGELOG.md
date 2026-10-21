@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- GitHub Action (`action.yml`): `uses: Anirudh-Nadipally/factguard@v0.2` with `text-file`, `source-file`, `fail-under`, `strict-rows`; outputs `score` and `flagged`, writes a job summary. Dogfooded in CI on `examples/`.
+- promptfoo python assertion (`integrations/promptfoo`) and DeepEval `BaseMetric` (`integrations/deepeval`, deepeval imported lazily). Core stays zero-dependency.
+
 ## 0.2.0 (2026-10-21)
 - Wrong-row detection: a correct number attached to the wrong entity is flagged, and the report names the row the value actually belongs to (reported by a user on X).
 - Compound number words are read as one number (`seventy-five` -> 75).

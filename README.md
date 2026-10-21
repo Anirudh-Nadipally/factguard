@@ -96,6 +96,37 @@ report.flagged        # contradicted + unsupported, each with .hint = "path=valu
 report.to_dict()      # JSON for logs and dashboards
 ```
 
+## Integrations
+
+**GitHub Action.** Fail a workflow when generated text has numbers its data doesn't support. The job summary lists each bad number.
+
+```yaml
+- uses: Anirudh-Nadipally/factguard@v0.2
+  with:
+    text-file: out/summary.txt
+    source-file: fixtures/week_42.json
+    fail-under: "1.0"      # optional; empty = report only
+    strict-rows: "false"   # optional
+```
+
+Outputs `score` and `flagged`. Runs on Linux and macOS runners with the runner's `python3`.
+
+**promptfoo.** Python assertion in [`integrations/promptfoo`](integrations/promptfoo):
+
+```yaml
+assert:
+  - type: python
+    value: file://factguard_assert.py
+    config: { fail_under: 1.0 }   # source data from vars.source (file://data.json works)
+```
+
+**DeepEval.** `BaseMetric` subclass in [`integrations/deepeval`](integrations/deepeval), deepeval imported lazily:
+
+```python
+from factguard_metric import FactGuardMetric
+assert_test(LLMTestCase(input=q, actual_output=answer), [FactGuardMetric(data=source_json, threshold=1.0)])
+```
+
 ## Limits
 
 - It checks numbers, not names or words. "LeBron scored 30" passes when someone else scored 30 and the check scopes to that player's record.
