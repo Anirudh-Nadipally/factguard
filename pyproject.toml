@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "factguard"
+name = "factguard-check"
 version = "0.2.0"
 description = "Catch LLMs inventing or misattributing numbers when they write from data. Deterministic, no LLM judge."
 readme = "README.md"
