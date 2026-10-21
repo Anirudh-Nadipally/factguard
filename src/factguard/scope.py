@@ -35,6 +35,11 @@ def _num(x: Any) -> float | None:
     return None
 
 
+def _abbrev(s: str) -> bool:
+    """A two-letter all-caps name such as US, UK or EU."""
+    return len(s) == 2 and s.isalpha() and s.isupper()
+
+
 def key_words(key: str) -> set[str]:
     key = re.sub(r"([a-z])([A-Z])", r"\1 \2", key)
     return {w for w in re.split(r"[^a-z0-9]+", key.lower()) if w}
@@ -92,10 +97,10 @@ class Scoper:
                     fields[str(k)] = (p, n)
                 elif isinstance(v, str):
                     s = v.strip()
-                    if 3 <= len(s) <= 60 and s.lower() not in _STOP and not s.isdigit():
+                    if (3 <= len(s) <= 60 or _abbrev(s)) and s.lower() not in _STOP and not s.isdigit():
                         names.append(s)
                 elif isinstance(v, list) and all(isinstance(x, str) for x in v):
-                    names += [x for x in v if 3 <= len(x) <= 60]  # e.g. "aliases": [...]
+                    names += [x for x in v if 3 <= len(x) <= 60 or _abbrev(x)]  # e.g. "aliases": [...]
             if names and fields:
                 self.records.append(Record(path or "$", names, fields))
             for k, v in node.items():
@@ -112,6 +117,8 @@ class Scoper:
             return []
         out = []
         for m in self._name_re.finditer(text):
+            if len(m.group(1)) == 2 and not _abbrev(m.group(1)):
+                continue  # "us" is a pronoun; only "US" names a record
             rs = self._index.get(m.group(1).lower(), [])
             if len({id(r) for r in rs}) == 1:
                 out.append((m.start(), m.end(), rs[0]))

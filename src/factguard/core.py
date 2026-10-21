@@ -340,7 +340,10 @@ class Checker:
         after = [m[2] for m in ms if m[0] >= c.end]
         prev = [m[2] for m in reversed(ms) if m[1] <= s_start]
         out, seen = [], set()
-        for r in subj + after + prev + objs:
+        # "In the UK, unemployment was 4.0%": with no subject, an object in the same
+        # sentence names the number's record before anything in the previous sentence
+        order = subj + after + prev + objs if subj else objs + after + prev
+        for r in order:
             if id(r) not in seen:
                 seen.add(id(r))
                 out.append(r)

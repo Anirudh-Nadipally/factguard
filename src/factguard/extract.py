@@ -24,7 +24,7 @@ _WORD_PHRASE = re.compile(
 
 _SCALE = {
     "k": 1e3, "thousand": 1e3, "m": 1e6, "mn": 1e6, "million": 1e6,
-    "b": 1e9, "bn": 1e9, "billion": 1e9, "lakh": 1e5, "lakhs": 1e5,
+    "b": 1e9, "bn": 1e9, "billion": 1e9, "t": 1e12, "tn": 1e12, "trillion": 1e12, "lakh": 1e5, "lakhs": 1e5,
     "crore": 1e7, "crores": 1e7,
 }
 
@@ -35,7 +35,7 @@ _NUM_RE = re.compile(
     (?P<cur>{_CURRENCY})?
     (?P<sign>[-+−])?
     (?P<num>\d{{1,3}}(?:,\d{{3}})+(?:\.\d+)?|\d+(?:\.\d+)?|\.\d+)
-    (?:\s?(?P<scale>k|K|M|mn|bn|B|thousand|million|billion|lakhs?|crores?)\b)?
+    (?:\s?(?P<scale>k|K|M|mn|bn|B|tn|T|thousand|million|billion|trillion|lakhs?|crores?)\b)?
     (?P<unit>\s?%|\s?percent\b|\s?pp\b|\s?percentage\ points?\b|\s?x\b|\s?×)?
     """,
     re.VERBOSE,

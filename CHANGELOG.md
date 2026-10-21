@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+- `trillion` / `tn` / `T` read as a scale (`$27.8 trillion`).
+- Two-letter all-caps names (`US`, `UK`) name a record; lowercase `us` never does.
+- With no subject in the sentence, a place named in it ("In the UK, unemployment was 4.0%") scopes the number before the previous sentence's subject does.
+- Benchmark unchanged.
+
 ## 0.2.1 (2026-10-21)
 - Named versions (`version 2.1`, `Python 3.12`, `release 4`) are no longer read as numeric claims. Benchmark unchanged.
 - Published to PyPI as `factguard-check` (import name stays `factguard`); the name `factguard` belongs to another project.
