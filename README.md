@@ -67,7 +67,7 @@ CI re-runs this and fails if the numbers drift from `benchmarks/inlg2021/results
 ## Use
 
 ```bash
-pip install git+https://github.com/Anirudh-Nadipally/factguard
+pip install factguard-check
 factguard check --data facts.json --text summary.txt
 factguard check --data facts.json --text summary.txt --fail-under 1.0   # exit 1 on any flag
 factguard check --data products.json --text report.txt --strict-rows  # a value from the wrong row is a contradiction even when the metric word is missing (off by default: noisy in dense multi-entity prose)

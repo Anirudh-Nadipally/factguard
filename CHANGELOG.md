@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Named versions (`version 2.1`, `Python 3.12`, `release 4`) are no longer read as numeric claims. Benchmark unchanged.
+- Published to PyPI as `factguard-check` (import name stays `factguard`); the name `factguard` belongs to another project.
 - Fix: a field word earlier in the clause no longer overrides an exact match on another field of the same record ("sold 30 units at $12.50" flagged the price). Benchmark unchanged.
 - GitHub Action (`action.yml`): `uses: Anirudh-Nadipally/factguard@v0.2` with `text-file`, `source-file`, `fail-under`, `strict-rows`; outputs `score` and `flagged`, writes a job summary. Dogfooded in CI on `examples/`.
 - promptfoo python assertion (`integrations/promptfoo`) and DeepEval `BaseMetric` (`integrations/deepeval`, deepeval imported lazily). Core stays zero-dependency.

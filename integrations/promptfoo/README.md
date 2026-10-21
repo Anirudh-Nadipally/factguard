@@ -3,7 +3,7 @@
 A [python assertion](https://www.promptfoo.dev/docs/configuration/expected-outputs/python/) that checks every number in the model output against the JSON the output was written from. Deterministic, no grader model.
 
 ```bash
-pip install git+https://github.com/Anirudh-Nadipally/factguard   # into the python promptfoo runs
+pip install factguard-check   # into the python promptfoo runs
 # copy factguard_assert.py next to your promptfooconfig.yaml
 ```
 

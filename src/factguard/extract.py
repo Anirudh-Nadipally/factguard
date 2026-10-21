@@ -96,7 +96,16 @@ def _is_noise(text: str, m: re.Match) -> bool:
         return True
     if (prev == "." and prev2.isdigit()) or (nxt == "." and nxt2.isdigit()):
         return True
+    # "version 2.1", "Python 3.12", "release 4": named versions, not facts
+    if not (m.group("cur") or m.group("unit") or m.group("scale")) and \
+            _VERSION_WORD_RE.search(text[max(0, s - 16):s]):
+        return True
     return False
+
+
+_VERSION_WORD_RE = re.compile(
+    r"\b(?:version|ver\.?|release|python|node(?:\.js)?|ios|android|macos|windows|ubuntu|java|php|ruby|go)\s+$",
+    re.IGNORECASE)
 
 
 def extract_claims(text: str, *, ignore_years: bool = True, words: bool = True) -> list[Claim]:

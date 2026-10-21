@@ -140,3 +140,8 @@ def test_earlier_field_word_does_not_steal_a_same_row_value():
     r = check("Holo Sticker sold 30 units at $12.50.", data)
     assert status(r, "$12.50") == "supported"
     assert status(r, "30") == "supported"
+
+
+def test_named_versions_are_not_claims():
+    r = check("We shipped version 2.1 and Python 3.12 support. Orders were 42.", {"orders": 42})
+    assert [v.claim for v in r.verdicts] == ["42"]
